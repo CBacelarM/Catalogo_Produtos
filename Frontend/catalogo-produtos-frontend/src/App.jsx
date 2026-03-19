@@ -1,5 +1,7 @@
+import Home from "./pages/Home";
+
 function App() {
-  return <h1>Catálogo de Produtos</h1>
+  return <Home />;
 }
 
-export default App
+export default App;
