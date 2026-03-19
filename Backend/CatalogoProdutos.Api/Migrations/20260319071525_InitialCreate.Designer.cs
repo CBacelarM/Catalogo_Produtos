@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CatalogoProdutos.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260319024955_InitialCreate")]
+    [Migration("20260319071525_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -59,6 +59,7 @@ namespace CatalogoProdutos.Api.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("Preco")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");

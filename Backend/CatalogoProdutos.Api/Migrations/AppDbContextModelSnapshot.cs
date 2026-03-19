@@ -56,6 +56,7 @@ namespace CatalogoProdutos.Api.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<decimal>("Preco")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
