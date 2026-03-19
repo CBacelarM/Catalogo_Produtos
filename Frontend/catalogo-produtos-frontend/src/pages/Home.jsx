@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
+import ProductCard from "../components/ProductCard";
 
 function Home() {
   const [produtos, setProdutos] = useState([]);
@@ -13,12 +14,12 @@ function Home() {
   return (
     <div>
       <h1>Produtos</h1>
-      {produtos.map(p => (
-        <div key={p.id}>
-          <h3>{p.nome}</h3>
-          <p>R$ {p.preco}</p>
-        </div>
-      ))}
+
+      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+        {produtos.map(p => (
+          <ProductCard key={p.id} produto={p} />
+        ))}
+      </div>
     </div>
   );
 }
