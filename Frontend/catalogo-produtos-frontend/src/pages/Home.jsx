@@ -16,10 +16,7 @@ function Home() {
 
   function loadProdutos() {
     api.get("/produtos", {
-      params: {
-        nome: busca,
-        categoria: categoria
-      }
+      params: { nome: busca, categoria }
     })
       .then(res => setProdutos(res.data))
       .catch(err => console.error(err));
@@ -40,35 +37,41 @@ function Home() {
   }
 
   function handleDelete(produto) {
-  setProdutoDelete(produto);
-  setOpenDelete(true);
-}
-
-async function confirmDelete(id) {
-  try {
-    await api.delete(`/produtos/${id}`);
-    setOpenDelete(false);
-    setProdutoDelete(null);
-    loadProdutos();
-  } catch (err) {
-    console.error(err);
+    setProdutoDelete(produto);
+    setOpenDelete(true);
   }
-}
+
+  async function confirmDelete(id) {
+    try {
+      await api.delete(`/produtos/${id}`);
+      setOpenDelete(false);
+      setProdutoDelete(null);
+      loadProdutos();
+    } catch (err) {
+      console.error(err);
+    }
+  }
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
       
       <Header 
-        onSearch={setBusca} 
+        onSearch={setBusca}
         onCategoriaChange={setCategoria}
         onNewProduct={handleNew}
       />
 
-      <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+      {/* GRID */}
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+        gap: "20px",
+        marginTop: "20px"
+      }}>
         {produtos.map(p => (
-          <ProductCard 
-            key={p.id} 
-            produto={p} 
+          <ProductCard
+            key={p.id}
+            produto={p}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
@@ -92,7 +95,6 @@ async function confirmDelete(id) {
         produto={produtoDelete}
       />
     </div>
-    
   );
 }
 
