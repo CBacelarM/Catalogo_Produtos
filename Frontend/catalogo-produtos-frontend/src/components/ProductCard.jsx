@@ -1,4 +1,4 @@
-function ProductCard({ produto }) {
+function ProductCard({ produto, onEdit }) {
   const estoque = produto.estoque;
 
   let status = {
@@ -33,6 +33,7 @@ function ProductCard({ produto }) {
       border: "1px solid #E5E7EB",
       borderRadius: "12px",
       padding: "16px",
+      width: "250px",
       transition: "0.2s",
       opacity: produto.ativo ? 1 : 0.6
     }}>
@@ -46,9 +47,9 @@ function ProductCard({ produto }) {
         }}
       />
 
-      <h3 style={{ fontSize: "16px" }}>{produto.nome}</h3>
+      <h3>{produto.nome}</h3>
 
-      <p style={{ fontSize: "20px", fontWeight: "bold" }}>
+      <p style={{ fontWeight: "bold", fontSize: "18px" }}>
         R$ {produto.preco}
       </p>
 
@@ -73,6 +74,10 @@ function ProductCard({ produto }) {
           Indisponível
         </p>
       )}
+
+      <button onClick={() => onEdit(produto)}>
+        ✏️ Editar
+      </button>
     </div>
   );
 }

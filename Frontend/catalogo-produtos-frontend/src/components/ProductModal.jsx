@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import api from "../services/api";
 
-function ProductModal({ isOpen, onClose, onCreated }) {
+function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
   const [form, setForm] = useState({
     nome: "",
     descricao: "",
@@ -13,10 +13,33 @@ function ProductModal({ isOpen, onClose, onCreated }) {
 
   const [errors, setErrors] = useState({});
 
+  useEffect(() => {
+    if (produtoEdit) {
+      setForm({
+        nome: produtoEdit.nome || "",
+        descricao: produtoEdit.descricao || "",
+        preco: produtoEdit.preco || "",
+        estoque: produtoEdit.estoque || "",
+        categoria: produtoEdit.categoria || "",
+        imagemUrl: produtoEdit.imagemUrl || ""
+      });
+    } else {
+      setForm({
+        nome: "",
+        descricao: "",
+        preco: "",
+        estoque: "",
+        categoria: "",
+        imagemUrl: ""
+      });
+    }
+  }, [produtoEdit]);
+
   if (!isOpen) return null;
 
   function handleChange(e) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
   }
 
   function validate() {
@@ -29,7 +52,7 @@ function ProductModal({ isOpen, onClose, onCreated }) {
       newErrors.preco = "Preço deve ser maior que 0";
 
     if (form.estoque === "" || form.estoque < 0)
-      newErrors.estoque = "Estoque não pode ser negativo";
+      newErrors.estoque = "Estoque inválido";
 
     if (!form.categoria)
       newErrors.categoria = "Categoria obrigatória";
@@ -44,12 +67,22 @@ function ProductModal({ isOpen, onClose, onCreated }) {
     if (!validate()) return;
 
     try {
-      await api.post("/produtos", {
-        ...form,
-        preco: Number(form.preco),
-        estoque: Number(form.estoque),
-        ativo: true
-      });
+      if (produtoEdit) {
+        await api.put(`/produtos/${produtoEdit.id}`, {
+          id: produtoEdit.id,
+          ...form,
+          preco: Number(form.preco),
+          estoque: Number(form.estoque),
+          ativo: true
+        });
+      } else {
+        await api.post("/produtos", {
+          ...form,
+          preco: Number(form.preco),
+          estoque: Number(form.estoque),
+          ativo: true
+        });
+      }
 
       onCreated();
       onClose();
@@ -61,25 +94,25 @@ function ProductModal({ isOpen, onClose, onCreated }) {
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
-        <h2>Novo Produto</h2>
+        <h2>{produtoEdit ? "Editar Produto" : "Novo Produto"}</h2>
 
         <form onSubmit={handleSubmit} style={styles.form}>
           
-          <input name="nome" placeholder="Nome*" onChange={handleChange} />
+          <input name="nome" placeholder="Nome*" value={form.nome} onChange={handleChange} />
           {errors.nome && <span>{errors.nome}</span>}
 
-          <textarea name="descricao" placeholder="Descrição" onChange={handleChange} />
+          <textarea name="descricao" placeholder="Descrição" value={form.descricao} onChange={handleChange} />
 
-          <input name="preco" type="number" placeholder="Preço*" onChange={handleChange} />
+          <input name="preco" type="number" placeholder="Preço*" value={form.preco} onChange={handleChange} />
           {errors.preco && <span>{errors.preco}</span>}
 
-          <input name="estoque" type="number" placeholder="Estoque*" onChange={handleChange} />
+          <input name="estoque" type="number" placeholder="Estoque*" value={form.estoque} onChange={handleChange} />
           {errors.estoque && <span>{errors.estoque}</span>}
 
-          <input name="categoria" placeholder="Categoria*" onChange={handleChange} />
+          <input name="categoria" placeholder="Categoria*" value={form.categoria} onChange={handleChange} />
           {errors.categoria && <span>{errors.categoria}</span>}
 
-          <input name="imagemUrl" placeholder="URL da imagem" onChange={handleChange} />
+          <input name="imagemUrl" placeholder="URL da imagem" value={form.imagemUrl} onChange={handleChange} />
 
           {form.imagemUrl && (
             <img
