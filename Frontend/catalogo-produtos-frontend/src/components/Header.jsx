@@ -1,4 +1,4 @@
-function Header({ onSearch, onCategoriaChange }) {
+function Header({ onSearch, onCategoriaChange, onNewProduct }) {
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>🏪 Catálogo de Produtos</h1>
@@ -18,8 +18,8 @@ function Header({ onSearch, onCategoriaChange }) {
           <option value="Alimentos">Alimentos</option>
         </select>
 
-        <button style={styles.button}>
-          + Novo Produto
+        <button onClick={onNewProduct} style={styles.button}>
+        + Novo Produto
         </button>
       </div>
     </div>

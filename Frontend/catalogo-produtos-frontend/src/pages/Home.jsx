@@ -2,28 +2,36 @@ import { useEffect, useState } from "react";
 import api from "../services/api";
 import ProductCard from "../components/ProductCard";
 import Header from "../components/Header";
+import ProductModal from "../components/ProductModal";
 
 function Home() {
   const [produtos, setProdutos] = useState([]);
   const [busca, setBusca] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [openModal, setOpenModal] = useState(false);
 
-  useEffect(() => {
+  function loadProdutos() {
     api.get("/produtos", {
       params: {
         nome: busca,
         categoria: categoria
       }
     })
-      .then(response => setProdutos(response.data))
-      .catch(error => console.error(error));
+      .then(res => setProdutos(res.data))
+      .catch(err => console.error(err));
+  }
+
+  useEffect(() => {
+    loadProdutos();
   }, [busca, categoria]);
 
   return (
     <div style={{ padding: "20px" }}>
+      
       <Header 
         onSearch={setBusca} 
-        onCategoriaChange={setCategoria} 
+        onCategoriaChange={setCategoria}
+        onNewProduct={() => setOpenModal(true)} 
       />
 
       <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
@@ -31,6 +39,13 @@ function Home() {
           <ProductCard key={p.id} produto={p} />
         ))}
       </div>
+
+      <ProductModal
+        isOpen={openModal}
+        onClose={() => setOpenModal(false)}
+        onCreated={loadProdutos} 
+      />
+
     </div>
   );
 }
