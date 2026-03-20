@@ -1,4 +1,4 @@
-function ProductCard({ produto, onEdit }) {
+function ProductCard({ produto, onEdit, onDelete }) {
   const estoque = produto.estoque;
 
   let status = {
@@ -34,50 +34,38 @@ function ProductCard({ produto, onEdit }) {
       borderRadius: "12px",
       padding: "16px",
       width: "250px",
-      transition: "0.2s",
       opacity: produto.ativo ? 1 : 0.6
     }}>
       <img
         src={produto.imagemUrl || "https://picsum.photos/300/200"}
         alt={produto.nome}
-        style={{
-          width: "100%",
-          borderRadius: "8px",
-          marginBottom: "10px"
-        }}
+        style={{ width: "100%", borderRadius: "8px" }}
       />
 
       <h3>{produto.nome}</h3>
 
-      <p style={{ fontWeight: "bold", fontSize: "18px" }}>
-        R$ {produto.preco}
-      </p>
+      <p><strong>R$ {produto.preco}</strong></p>
 
       <span style={{
-        display: "inline-block",
-        padding: "5px 10px",
-        borderRadius: "8px",
         background: status.bg,
         color: status.color,
-        fontSize: "12px",
-        fontWeight: "600"
+        padding: "5px 10px",
+        borderRadius: "8px"
       }}>
         {status.text}
       </span>
 
-      <p style={{ color: "#6B7280", marginTop: "8px" }}>
-        {produto.categoria}
-      </p>
+      <p>{produto.categoria}</p>
 
-      {!produto.ativo && (
-        <p style={{ color: "#EF4444", fontWeight: "bold" }}>
-          Indisponível
-        </p>
-      )}
+      <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
+        <button onClick={() => onEdit(produto)}>
+          ✏️ Editar
+        </button>
 
-      <button onClick={() => onEdit(produto)}>
-        ✏️ Editar
-      </button>
+        <button onClick={() => onDelete(produto)}>
+          🗑️ Excluir
+        </button>
+      </div>
     </div>
   );
 }
