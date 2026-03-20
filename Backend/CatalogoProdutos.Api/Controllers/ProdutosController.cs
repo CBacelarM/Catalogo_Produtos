@@ -31,7 +31,7 @@ namespace CatalogoProdutos.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(Guid id)
+        public async Task<IActionResult> GetById(int id)
         {
             var produto = await _context.Produtos.FindAsync(id);
 
@@ -72,7 +72,7 @@ namespace CatalogoProdutos.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(int id)
         {
             var produto = await _context.Produtos.FindAsync(id);
 
