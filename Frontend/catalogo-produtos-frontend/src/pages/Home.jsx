@@ -9,17 +9,45 @@ function Home() {
   const [produtos, setProdutos] = useState([]);
   const [busca, setBusca] = useState("");
   const [categoria, setCategoria] = useState("");
+  const [ordenacao, setOrdenacao] = useState("");
+  const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
   const [produtoEdit, setProdutoEdit] = useState(null);
   const [openDelete, setOpenDelete] = useState(false);
   const [produtoDelete, setProdutoDelete] = useState(null);
 
   function loadProdutos() {
+    setLoading(true);
     api.get("/produtos", {
       params: { nome: busca, categoria }
     })
-      .then(res => setProdutos(res.data))
-      .catch(err => console.error(err));
+      .then(res => {
+        setProdutos(res.data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error(err);
+        setLoading(false);
+      });
+  }
+
+  function ordenarProdutos(items) {
+    if (!ordenacao) return items;
+
+    const copia = [...items];
+
+    switch(ordenacao) {
+      case "recentes":
+        return copia.reverse();
+      case "precoMaior":
+        return copia.sort((a, b) => b.preco - a.preco);
+      case "precoMenor":
+        return copia.sort((a, b) => a.preco - b.preco);
+      case "alfabetico":
+        return copia.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+      default:
+        return copia;
+    }
   }
 
   useEffect(() => {
@@ -52,6 +80,8 @@ function Home() {
     }
   }
 
+  const produtosOrdenados = ordenarProdutos(produtos);
+
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
       
@@ -59,16 +89,69 @@ function Home() {
         onSearch={setBusca}
         onCategoriaChange={setCategoria}
         onNewProduct={handleNew}
+        onOrderChange={setOrdenacao}
       />
 
+      {/* LOADING */}
+      {loading && (
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
+          flexDirection: "column",
+          gap: "20px"
+        }}>
+          <div style={{
+            border: "4px solid #E5E7EB",
+            borderTop: "4px solid #3B82F6",
+            borderRadius: "50%",
+            width: "40px",
+            height: "40px",
+            animation: "spin 1s linear infinite"
+          }} />
+          <p style={{ color: "#6B7280", fontSize: "16px" }}>Carregando produtos...</p>
+        </div>
+      )}
+
+      {/* EMPTY STATE */}
+      {!loading && produtosOrdenados.length === 0 && (
+        <div style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "400px",
+          flexDirection: "column",
+          gap: "20px",
+          textAlign: "center"
+        }}>
+          <div style={{ fontSize: "60px" }}>📭</div>
+          <h2 style={{ color: "#6B7280", margin: 0 }}>Nenhum produto encontrado</h2>
+          <p style={{ color: "#9CA3AF", margin: 0 }}>Tente ajustar seus filtros ou criar um novo produto</p>
+          <button onClick={handleNew} style={{
+            background: "#3B82F6",
+            color: "#fff",
+            border: "none",
+            padding: "10px 20px",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontWeight: "bold",
+            marginTop: "10px"
+          }}>
+            + Novo Produto
+          </button>
+        </div>
+      )}
+
       {/* GRID */}
+      {!loading && produtosOrdenados.length > 0 && (
       <div style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
         gap: "20px",
         marginTop: "20px"
       }}>
-        {produtos.map(p => (
+        {produtosOrdenados.map(p => (
           <ProductCard
             key={p.id}
             produto={p}
@@ -77,6 +160,7 @@ function Home() {
           />
         ))}
       </div>
+      )}
 
       <ProductModal
         isOpen={openModal}

@@ -94,25 +94,40 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
   return (
     <div style={styles.overlay}>
       <div style={styles.modal}>
-        <h2>{produtoEdit ? "Editar Produto" : "Novo Produto"}</h2>
+        <button type="button" style={styles.closeButton} onClick={onClose} aria-label="Fechar">×</button>
+        <h2 style={styles.title}>{produtoEdit ? "Editar Produto" : "Novo Produto"}</h2>
 
         <form onSubmit={handleSubmit} style={styles.form}>
           
-          <input name="nome" placeholder="Nome*" value={form.nome} onChange={handleChange} />
-          {errors.nome && <span>{errors.nome}</span>}
+          <input name="nome" placeholder="Nome*" value={form.nome} onChange={handleChange} style={styles.input} />
+          {errors.nome && <span style={styles.error}>{errors.nome}</span>}
 
-          <textarea name="descricao" placeholder="Descrição" value={form.descricao} onChange={handleChange} />
+          <textarea name="descricao" placeholder="Descrição" value={form.descricao} onChange={handleChange} style={styles.textarea} />
 
-          <input name="preco" type="number" placeholder="Preço*" value={form.preco} onChange={handleChange} />
-          {errors.preco && <span>{errors.preco}</span>}
+          <div style={styles.rowGroup}>
+            <div>
+              <input name="preco" type="number" placeholder="Preço*" value={form.preco} onChange={handleChange} style={styles.inputHalf} />
+              {errors.preco && <span style={styles.error}>{errors.preco}</span>}
+            </div>
 
-          <input name="estoque" type="number" placeholder="Estoque*" value={form.estoque} onChange={handleChange} />
-          {errors.estoque && <span>{errors.estoque}</span>}
+            <div>
+              <input name="estoque" type="number" placeholder="Estoque*" value={form.estoque} onChange={handleChange} style={styles.inputHalf} />
+              {errors.estoque && <span style={styles.error}>{errors.estoque}</span>}
+            </div>
+          </div>
 
-          <input name="categoria" placeholder="Categoria*" value={form.categoria} onChange={handleChange} />
-          {errors.categoria && <span>{errors.categoria}</span>}
+          <select name="categoria" value={form.categoria} onChange={handleChange} style={styles.select}>
+            <option value="">Selecione uma categoria*</option>
+            <option value="Eletrônicos">Eletrônicos</option>
+            <option value="Roupas">Roupas</option>
+            <option value="Alimentos">Alimentos</option>
+            <option value="Casa">Casa</option>
+            <option value="Esportes">Esportes</option>
+            <option value="Outros">Outros</option>
+          </select>
+          {errors.categoria && <span style={styles.error}>{errors.categoria}</span>}
 
-          <input name="imagemUrl" placeholder="URL da imagem" value={form.imagemUrl} onChange={handleChange} />
+          <input name="imagemUrl" placeholder="URL da imagem" value={form.imagemUrl} onChange={handleChange} style={styles.input} />
 
           {form.imagemUrl && (
             <img
@@ -123,12 +138,12 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
           )}
 
           <div style={styles.buttons}>
-            <button type="button" onClick={onClose}>
+            <button type="button" style={styles.cancelButton} onClick={onClose}>
               Cancelar
             </button>
 
-            <button type="submit">
-              Salvar
+            <button type="submit" style={styles.saveButton}>
+              Salvar Produto
             </button>
           </div>
         </form>
@@ -150,15 +165,89 @@ const styles = {
     alignItems: "center"
   },
   modal: {
+    position: "relative",
     background: "#fff",
     padding: "20px",
     borderRadius: "12px",
-    width: "400px"
+    width: "90%",
+    maxWidth: "500px"
   },
   form: {
     display: "flex",
     flexDirection: "column",
     gap: "10px"
+  },
+  input: {
+    padding: "10px",
+    borderRadius: "8px",
+    border: "1px solid #E5E7EB",
+    width: "100%",
+    boxSizing: "border-box"
+  },
+  textarea: {
+    padding: "10px",
+    borderRadius: "8px",
+    border: "1px solid #E5E7EB",
+    width: "100%",
+    minHeight: "80px",
+    boxSizing: "border-box"
+  },
+  select: {
+    padding: "10px",
+    borderRadius: "8px",
+    border: "1px solid #E5E7EB",
+    width: "100%",
+    background: "#fff",
+    boxSizing: "border-box"
+  },
+  rowGroup: {
+    display: "flex",
+    gap: "10px"
+  },
+  inputHalf: {
+    padding: "10px",
+    borderRadius: "8px",
+    border: "1px solid #E5E7EB",
+    width: "100%",
+    boxSizing: "border-box"
+  },
+  closeButton: {
+    position: "absolute",
+    top: "10px",
+    right: "10px",
+    border: "none",
+    background: "transparent",
+    fontSize: "32px",
+    cursor: "pointer",
+    color: "#6B7280"
+  },
+  title: {
+    marginTop: 0,
+    marginBottom: "15px"
+  },
+  error: {
+    color: "#DC2626",
+    fontSize: "12px"
+  },
+  cancelButton: {
+    flex: 1,
+    background: "#9CA3AF",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    padding: "12px",
+    fontWeight: "bold",
+    cursor: "pointer"
+  },
+  saveButton: {
+    flex: 1,
+    background: "#10B981",
+    color: "#fff",
+    border: "none",
+    borderRadius: "8px",
+    padding: "12px",
+    fontWeight: "bold",
+    cursor: "pointer"
   },
   buttons: {
     display: "flex",

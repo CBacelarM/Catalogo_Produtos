@@ -1,40 +1,37 @@
+import { useState } from "react";
+
 function ProductCard({ produto, onEdit, onDelete }) {
+  const [hovered, setHovered] = useState(null);
   const estoque = produto.estoque;
+  const isSemEstoque = estoque === 0;
+  const isInactive = !produto.ativo && !isSemEstoque;
 
-  let status = {};
+  const status = isSemEstoque
+    ? { text: "❌ Indisponível", bg: "#FEE2E2", color: "#991B1B" }
+    : estoque < 10
+      ? { text: `⚠ Apenas ${estoque} unidades`, bg: "#FEF3C7", color: "#92400E" }
+      : { text: `✅ ${estoque} unidades`, bg: "#D1FAE5", color: "#065F46" };
 
-  if (estoque === 0) {
-    status = {
-      text: "❌ Sem estoque",
-      bg: "#FEE2E2",
-      color: "#991B1B"
-    };
-  } else if (estoque < 10) {
-    status = {
-      text: `⚠ Apenas ${estoque} unidades`,
-      bg: "#FEF3C7",
-      color: "#92400E"
-    };
-  } else {
-    status = {
-      text: `✅ ${estoque} unidades`,
-      bg: "#D1FAE5",
-      color: "#065F46"
-    };
-  }
+  const cardStyle = {
+    background: "#FFFFFF",
+    border: "1px solid #E5E7EB",
+    borderRadius: "12px",
+    padding: "16px",
+    transition: "0.2s",
+    cursor: "pointer",
+    opacity: isSemEstoque ? 0.45 : produto.ativo ? 1 : 0.6,
+    filter: isSemEstoque ? "grayscale(80%)" : "none"
+  };
 
   return (
-    <div style={{
-      background: "#FFFFFF",
-      border: "1px solid #E5E7EB",
-      borderRadius: "12px",
-      padding: "16px",
-      transition: "0.2s",
-      cursor: "pointer",
-      opacity: produto.ativo ? 1 : 0.6
-    }}
-    onMouseEnter={e => e.currentTarget.style.transform = "translateY(-5px)"}
-    onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}
+    <div
+      style={cardStyle}
+      onMouseEnter={e => {
+        if (!isSemEstoque) e.currentTarget.style.transform = "translateY(-5px)";
+      }}
+      onMouseLeave={e => {
+        if (!isSemEstoque) e.currentTarget.style.transform = "translateY(0)";
+      }}
     >
 
       <img
@@ -54,7 +51,7 @@ function ProductCard({ produto, onEdit, onDelete }) {
       </h3>
 
       <p style={{ fontSize: "20px", fontWeight: "700" }}>
-        R$ {produto.preco}
+        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(produto.preco)}
       </p>
 
       <span style={{
@@ -84,11 +81,29 @@ function ProductCard({ produto, onEdit, onDelete }) {
         display: "flex",
         gap: "10px"
       }}>
-        <button style={btnEdit} onClick={() => onEdit(produto)}>
+        <button
+          style={{
+            ...btnEdit,
+            ...(hovered === "edit" ? btnEditHover : {}),
+            ...(!produto.ativo ? btnInactive : {})
+          }}
+          onClick={() => onEdit(produto)}
+          onMouseEnter={() => setHovered("edit")}
+          onMouseLeave={() => setHovered(null)}
+        >
           Editar
         </button>
 
-        <button style={btnDelete} onClick={() => onDelete(produto)}>
+        <button
+          style={{
+            ...btnDelete,
+            ...(hovered === "delete" ? btnDeleteHover : {}),
+            ...(!produto.ativo ? btnInactive : {})
+          }}
+          onClick={() => onDelete(produto)}
+          onMouseEnter={() => setHovered("delete")}
+          onMouseLeave={() => setHovered(null)}
+        >
           Excluir
         </button>
       </div>
@@ -114,6 +129,19 @@ const btnDelete = {
   padding: "8px",
   borderRadius: "8px",
   cursor: "pointer"
+};
+
+const btnEditHover = {
+  background: "#2563EB"
+};
+
+const btnDeleteHover = {
+  background: "#DC2626"
+};
+
+const btnInactive = {
+  opacity: 0.5,
+  cursor: "not-allowed"
 };
 
 export default ProductCard;
