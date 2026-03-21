@@ -1,4 +1,4 @@
-function Header({ onSearch, onCategoriaChange, onNewProduct, onOrderChange }) {
+function Header({ onSearch, onCategoriaChange, onDisponibilidadeChange, onNewProduct, onOrderChange }) {
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>🏪 Catálogo de Produtos</h1>
@@ -25,6 +25,12 @@ function Header({ onSearch, onCategoriaChange, onNewProduct, onOrderChange }) {
             <option value="Casa">Casa</option>
             <option value="Esportes">Esportes</option>
             <option value="Outros">Outros</option>
+          </select>
+
+          <select style={styles.select} onChange={(e) => onDisponibilidadeChange(e.target.value)}>
+            <option value="">📦 Todos os Produtos</option>
+            <option value="disponiveis">Disponíveis</option>
+            <option value="semEstoque">Sem Estoque</option>
           </select>
 
           <select style={styles.select} onChange={(e) => onOrderChange(e.target.value)}>

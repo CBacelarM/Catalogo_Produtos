@@ -8,7 +8,8 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
     preco: "",
     estoque: "",
     categoria: "",
-    imagemUrl: ""
+    imagemUrl: "",
+    ativo: true
   });
 
   const [errors, setErrors] = useState({});
@@ -21,7 +22,8 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
         preco: produtoEdit.preco || "",
         estoque: produtoEdit.estoque || "",
         categoria: produtoEdit.categoria || "",
-        imagemUrl: produtoEdit.imagemUrl || ""
+        imagemUrl: produtoEdit.imagemUrl || "",
+        ativo: produtoEdit.ativo !== undefined ? produtoEdit.ativo : true
       });
     } else {
       setForm({
@@ -30,7 +32,8 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
         preco: "",
         estoque: "",
         categoria: "",
-        imagemUrl: ""
+        imagemUrl: "",
+        ativo: true
       });
     }
   }, [produtoEdit]);
@@ -73,14 +76,14 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
           ...form,
           preco: Number(form.preco),
           estoque: Number(form.estoque),
-          ativo: true
+          ativo: form.ativo
         });
       } else {
         await api.post("/produtos", {
           ...form,
           preco: Number(form.preco),
           estoque: Number(form.estoque),
-          ativo: true
+          ativo: form.ativo
         });
       }
 
@@ -136,6 +139,15 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
               style={{ width: "100px", marginTop: "10px" }}
             />
           )}
+
+          <label style={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              checked={form.ativo}
+              onChange={(e) => setForm({ ...form, ativo: e.target.checked })}
+            />
+            Produto ativo
+          </label>
 
           <div style={styles.buttons}>
             <button type="button" style={styles.cancelButton} onClick={onClose}>
@@ -253,6 +265,12 @@ const styles = {
     display: "flex",
     justifyContent: "space-between",
     marginTop: "10px"
+  },
+  checkboxLabel: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    fontSize: "14px"
   }
 };
 
