@@ -1,5 +1,7 @@
 import { useTheme } from "../contexts/ThemeContext";
 
+const pluralize = (count, singular, plural) => count === 1 ? singular : plural;
+
 function Dashboard({ produtos, onClose }) {
   const { isDarkMode } = useTheme();
 
@@ -41,7 +43,7 @@ function Dashboard({ produtos, onClose }) {
             <h3 style={styles.cardTitle}>Total de Produtos</h3>
             <p style={styles.metric}>{totalProdutos}</p>
             <p style={styles.description}>
-              {produtosAtivos} ativos, {produtosInativos} inativos
+              {produtosAtivos} {pluralize(produtosAtivos, 'ativo', 'ativos')}, {produtosInativos} {pluralize(produtosInativos, 'inativo', 'inativos')}
             </p>
           </div>
 
@@ -67,7 +69,7 @@ function Dashboard({ produtos, onClose }) {
           <div style={styles.card}>
             <h3 style={styles.cardTitle}>Estoque Baixo</h3>
             <p style={styles.metric}>{produtosEstoqueBaixo.length}</p>
-            <p style={styles.description}>produtos com menos de 10 unidades</p>
+            <p style={styles.description}>{pluralize(produtosEstoqueBaixo.length, 'produto', 'produtos')} com menos de 10 unidades</p>
             {produtosEstoqueBaixo.length > 0 && (
               <div style={styles.list}>
                 {produtosEstoqueBaixo.slice(0, 3).map(p => (
@@ -76,7 +78,7 @@ function Dashboard({ produtos, onClose }) {
                   </div>
                 ))}
                 {produtosEstoqueBaixo.length > 3 && (
-                  <div style={styles.listItem}>...e mais {produtosEstoqueBaixo.length - 3}</div>
+                  <div style={styles.listItem}>...e mais {produtosEstoqueBaixo.length - 3} {pluralize(produtosEstoqueBaixo.length - 3, 'produto', 'produtos')}</div>
                 )}
               </div>
             )}
@@ -86,7 +88,7 @@ function Dashboard({ produtos, onClose }) {
           <div style={styles.card}>
             <h3 style={styles.cardTitle}>Sem Estoque</h3>
             <p style={styles.metric}>{produtosSemEstoque.length}</p>
-            <p style={styles.description}>produtos esgotados</p>
+            <p style={styles.description}>{pluralize(produtosSemEstoque.length, 'produto', 'produtos')} esgotado(s)</p>
             {produtosSemEstoque.length > 0 && (
               <div style={styles.list}>
                 {produtosSemEstoque.slice(0, 3).map(p => (
@@ -95,7 +97,7 @@ function Dashboard({ produtos, onClose }) {
                   </div>
                 ))}
                 {produtosSemEstoque.length > 3 && (
-                  <div style={styles.listItem}>...e mais {produtosSemEstoque.length - 3}</div>
+                  <div style={styles.listItem}>...e mais {produtosSemEstoque.length - 3} {pluralize(produtosSemEstoque.length - 3, 'produto', 'produtos')}</div>
                 )}
               </div>
             )}
@@ -131,7 +133,7 @@ function Dashboard({ produtos, onClose }) {
             <div style={styles.list}>
               {Object.entries(categorias).map(([categoria, dados]) => (
                 <div key={categoria} style={styles.listItem}>
-                  <strong>{categoria || 'Sem categoria'}</strong>: {dados.count} produtos
+                  <strong>{categoria || 'Sem categoria'}</strong>: {dados.count} {pluralize(dados.count, 'produto', 'produtos')}
                   <br />
                   <small>Valor: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(dados.valor)}</small>
                 </div>
