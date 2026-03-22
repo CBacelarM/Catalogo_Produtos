@@ -1,6 +1,9 @@
 import Home from "./pages/Home";
+import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 
-function App() {
+function AppContent() {
+  const { theme } = useTheme();
+
   return (
     <>
       <style>{`
@@ -11,13 +14,23 @@ function App() {
         }
       `}</style>
       <div style={{
-        background: "#F9FAFB",
+        background: theme.background,
         minHeight: "100vh",
-        fontFamily: "Arial, sans-serif"
+        fontFamily: "Arial, sans-serif",
+        color: theme.text,
+        transition: "background-color 0.3s ease, color 0.3s ease"
       }}>
         <Home />
       </div>
     </>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 

@@ -4,8 +4,10 @@ import ProductCard from "../components/ProductCard";
 import Header from "../components/Header";
 import ProductModal from "../components/ProductModal";
 import DeleteModal from "../components/DeleteModal";
+import { useTheme } from "../contexts/ThemeContext";
 
 function Home() {
+  const { theme } = useTheme();
   const [produtos, setProdutos] = useState([]);
   const [busca, setBusca] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -95,11 +97,13 @@ function Home() {
   const produtoMaisBarato = produtos.reduce((min, p) => p.preco < min.preco ? p : min, { preco: Infinity });
 
   const cardStyle = {
-    background: "#FFFFFF",
-    border: "1px solid #E5E7EB",
+    background: theme.cardBackground,
+    border: `1px solid ${theme.border}`,
     borderRadius: "12px",
     padding: "16px",
-    textAlign: "center"
+    textAlign: "center",
+    color: theme.text,
+    transition: "all 0.3s ease"
   };
 
   return (
@@ -124,14 +128,14 @@ function Home() {
           gap: "20px"
         }}>
           <div style={{
-            border: "4px solid #E5E7EB",
-            borderTop: "4px solid #3B82F6",
+            border: `4px solid ${theme.border}`,
+            borderTop: `4px solid ${theme.primary}`,
             borderRadius: "50%",
             width: "40px",
             height: "40px",
             animation: "spin 1s linear infinite"
           }} />
-          <p style={{ color: "#6B7280", fontSize: "16px" }}>Carregando produtos...</p>
+          <p style={{ color: theme.textSecondary, fontSize: "16px" }}>Carregando produtos...</p>
         </div>
       )}
 
@@ -146,11 +150,11 @@ function Home() {
           gap: "20px",
           textAlign: "center"
         }}>
-          <div style={{ fontSize: "60px" }}>📭</div>
-          <h2 style={{ color: "#6B7280", margin: 0 }}>Nenhum produto encontrado</h2>
-          <p style={{ color: "#9CA3AF", margin: 0 }}>Tente ajustar seus filtros ou criar um novo produto</p>
+          <div style={{ fontSize: "60px" }}>Nenhum produto</div>
+          <h2 style={{ color: theme.textSecondary, margin: 0 }}>Nenhum produto encontrado</h2>
+          <p style={{ color: theme.textMuted, margin: 0 }}>Tente ajustar seus filtros ou criar um novo produto</p>
           <button onClick={handleNew} style={{
-            background: "#3B82F6",
+            background: theme.primary,
             color: "#fff",
             border: "none",
             padding: "10px 20px",
@@ -173,26 +177,26 @@ function Home() {
           marginBottom: "20px"
         }}>
           <div style={cardStyle}>
-            <h3>Total de Produtos</h3>
-            <p style={{ fontSize: "24px", fontWeight: "bold" }}>{totalProdutos}</p>
+            <h3 style={{ color: theme.textSecondary }}>Total de Produtos</h3>
+            <p style={{ fontSize: "24px", fontWeight: "bold", color: theme.text }}>{totalProdutos}</p>
           </div>
           <div style={cardStyle}>
-            <h3>Valor Total do Estoque</h3>
-            <p style={{ fontSize: "24px", fontWeight: "bold" }}>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotalEstoque)}</p>
+            <h3 style={{ color: theme.textSecondary }}>Valor Total do Estoque</h3>
+            <p style={{ fontSize: "24px", fontWeight: "bold", color: theme.text }}>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotalEstoque)}</p>
           </div>
           <div style={cardStyle}>
-            <h3>Produtos com Estoque Baixo</h3>
-            <p style={{ fontSize: "24px", fontWeight: "bold" }}>{produtosEstoqueBaixo}</p>
+            <h3 style={{ color: theme.textSecondary }}>Produtos com Estoque Baixo</h3>
+            <p style={{ fontSize: "24px", fontWeight: "bold", color: theme.text }}>{produtosEstoqueBaixo}</p>
           </div>
           <div style={cardStyle}>
-            <h3>Produto Mais Caro</h3>
-            <p style={{ fontSize: "16px" }}>{produtoMaisCaro.nome || "N/A"}</p>
-            <p style={{ fontSize: "20px", fontWeight: "bold" }}>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(produtoMaisCaro.preco || 0)}</p>
+            <h3 style={{ color: theme.textSecondary }}>Produto Mais Caro</h3>
+            <p style={{ fontSize: "16px", color: theme.text }}>{produtoMaisCaro.nome || "N/A"}</p>
+            <p style={{ fontSize: "20px", fontWeight: "bold", color: theme.text }}>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(produtoMaisCaro.preco || 0)}</p>
           </div>
           <div style={cardStyle}>
-            <h3>Produto Mais Barato</h3>
-            <p style={{ fontSize: "16px" }}>{produtoMaisBarato.nome || "N/A"}</p>
-            <p style={{ fontSize: "20px", fontWeight: "bold" }}>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(produtoMaisBarato.preco === Infinity ? 0 : produtoMaisBarato.preco)}</p>
+            <h3 style={{ color: theme.textSecondary }}>Produto Mais Barato</h3>
+            <p style={{ fontSize: "16px", color: theme.text }}>{produtoMaisBarato.nome || "N/A"}</p>
+            <p style={{ fontSize: "20px", fontWeight: "bold", color: theme.text }}>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(produtoMaisBarato.preco === Infinity ? 0 : produtoMaisBarato.preco)}</p>
           </div>
         </div>
       )}
