@@ -47,6 +47,22 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
     }
   }, [produtoEdit]);
 
+  useEffect(() => {
+    if (isOpen && !produtoEdit) {
+      setForm({
+        nome: "",
+        descricao: "",
+        preco: "",
+        estoque: "",
+        categoria: "",
+        imagemUrl: "",
+        ativo: true
+      });
+      setErrors({});
+      setImageError(false);
+    }
+  }, [isOpen, produtoEdit]);
+
   if (!isOpen) return null;
 
   function handleChange(e) {
