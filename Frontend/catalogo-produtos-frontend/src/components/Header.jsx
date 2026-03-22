@@ -1,7 +1,18 @@
-function Header({ onSearch, onCategoriaChange, onDisponibilidadeChange, onNewProduct, onOrderChange }) {
+import { useTheme } from "../contexts/ThemeContext";
+
+function Header({ onSearch, onCategoriaChange, onDisponibilidadeChange, onNewProduct, onOrderChange, onShowDashboard }) {
+  const { isDarkMode, toggleTheme } = useTheme();
+
+  const styles = getStyles(isDarkMode);
+
   return (
     <div style={styles.container}>
-      <h1 style={styles.title}>🏪 Catálogo de Produtos</h1>
+      <div style={styles.headerTop}>
+        <h1 style={styles.title}>🏪 Catálogo de Produtos</h1>
+        <button onClick={toggleTheme} style={styles.themeButton}>
+          {isDarkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+        </button>
+      </div>
 
       <div style={styles.actions}>
         <div style={styles.searchRow}>
@@ -13,6 +24,9 @@ function Header({ onSearch, onCategoriaChange, onDisponibilidadeChange, onNewPro
           />
           <button onClick={onNewProduct} style={styles.button}>
           + Novo Produto
+          </button>
+          <button onClick={onShowDashboard} style={styles.dashboardButton}>
+          📊 Dashboard
           </button>
         </div>
 
@@ -46,54 +60,88 @@ function Header({ onSearch, onCategoriaChange, onDisponibilidadeChange, onNewPro
   );
 }
 
-const styles = {
+const getStyles = (isDarkMode) => ({
   container: {
     marginBottom: "20px"
   },
-  title: {
-    fontSize: "24px",
-    fontWeight: "bold",
+  headerTop: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: "10px"
+  },
+  title: {
+    fontSize: "20px",
+    fontWeight: "700",
+    margin: 0,
+    color: isDarkMode ? "#F9FAFB" : "#111827"
+  },
+  themeButton: {
+    background: isDarkMode ? "#374151" : "#E5E7EB",
+    border: "1px solid" + (isDarkMode ? " #4B5563" : " #D1D5DB"),
+    fontSize: "14px",
+    cursor: "pointer",
+    padding: "6px 10px",
+    borderRadius: "6px",
+    transition: "background 0.2s, transform 0.1s",
+    color: isDarkMode ? "#F9FAFB" : "#111827",
+    fontWeight: "600"
   },
   actions: {
     display: "flex",
     flexDirection: "column",
-    gap: "10px"
+    gap: "8px",
+    padding: "0 4px"
   },
   searchRow: {
-    display: "flex",
-    gap: "10px",
+    display: "grid",
+    gridTemplateColumns: "1fr auto auto",
+    gap: "8px",
     alignItems: "center"
   },
   filterRow: {
-    display: "flex",
-    gap: "10px",
-    flexWrap: "wrap"
+    display: "grid",
+    gridTemplateColumns: "repeat(4, minmax(120px, 1fr))",
+    gap: "8px",
+    alignItems: "center"
   },
   input: {
     flex: 1,
-    padding: "10px",
+    padding: "8px",
     borderRadius: "8px",
-    border: "1px solid #E5E7EB",
-    minWidth: "200px"
+    border: `1px solid ${isDarkMode ? "#374151" : "#E5E7EB"}`,
+    background: isDarkMode ? "#1F2937" : "#fff",
+    color: isDarkMode ? "#F9FAFB" : "#111827",
+    minWidth: "160px"
   },
   select: {
-    padding: "10px",
+    padding: "8px",
     borderRadius: "8px",
-    border: "1px solid #E5E7EB",
-    flex: 1,
-    minWidth: "150px"
+    border: `1px solid ${isDarkMode ? "#374151" : "#E5E7EB"}`,
+    background: isDarkMode ? "#1F2937" : "#fff",
+    color: isDarkMode ? "#F9FAFB" : "#111827",
+    minWidth: "130px"
   },
   button: {
-    backgroundColor: "#3B82F6",
+    backgroundColor: "#2563EB",
     color: "#fff",
     border: "none",
-    padding: "10px 16px",
+    padding: "7px 12px",
     borderRadius: "8px",
     cursor: "pointer",
-    fontWeight: "bold",
+    fontWeight: "600",
+    whiteSpace: "nowrap"
+  },
+  dashboardButton: {
+    backgroundColor: isDarkMode ? "#047857" : "#059669",
+    color: "#fff",
+    border: "none",
+    padding: "7px 12px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "600",
     whiteSpace: "nowrap"
   }
-};
+});
 
 export default Header;

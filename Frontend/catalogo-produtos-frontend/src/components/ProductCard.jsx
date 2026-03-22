@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { useTheme } from "../contexts/ThemeContext";
 
 function ProductCard({ produto, onEdit, onDelete }) {
+  const { isDarkMode } = useTheme();
   const [hovered, setHovered] = useState(null);
   const estoque = produto.estoque;
   const isSemEstoque = estoque === 0;
-  const isInactive = !produto.ativo && !isSemEstoque;
 
   const status = isSemEstoque
     ? { text: "❌ Indisponível", bg: "#FEE2E2", color: "#991B1B" }
@@ -13,8 +14,8 @@ function ProductCard({ produto, onEdit, onDelete }) {
       : { text: `✅ ${estoque} unidades`, bg: "#D1FAE5", color: "#065F46" };
 
   const cardStyle = {
-    background: "#FFFFFF",
-    border: "1px solid #E5E7EB",
+    background: isDarkMode ? "#1F2937" : "#FFFFFF",
+    border: `1px solid ${isDarkMode ? "#374151" : "#E5E7EB"}`,
     borderRadius: "12px",
     padding: "16px",
     transition: "0.2s",
@@ -46,13 +47,19 @@ function ProductCard({ produto, onEdit, onDelete }) {
         }}
       />
 
-      <h3 style={{ fontSize: "16px", fontWeight: "600" }}>
+      <h3 style={{ fontSize: "16px", fontWeight: "600", color: isDarkMode ? "#F9FAFB" : "#111827" }}>
         {produto.nome}
       </h3>
 
-      <p style={{ fontSize: "20px", fontWeight: "700" }}>
+      <p style={{ fontSize: "20px", fontWeight: "700", color: isDarkMode ? "#F9FAFB" : "#111827" }}>
         {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(produto.preco)}
       </p>
+
+      {produto.descricao && (
+        <p style={{ fontSize: "14px", color: isDarkMode ? "#9CA3AF" : "#6B7280", margin: "5px 0" }}>
+          {produto.descricao.length > 100 ? produto.descricao.substring(0, 100) + "..." : produto.descricao}
+        </p>
+      )}
 
       <span style={{
         display: "inline-block",
@@ -66,7 +73,7 @@ function ProductCard({ produto, onEdit, onDelete }) {
         {status.text}
       </span>
 
-      <p style={{ color: "#6B7280", marginTop: "8px" }}>
+      <p style={{ color: isDarkMode ? "#9CA3AF" : "#6B7280", marginTop: "8px" }}>
         {produto.categoria}
       </p>
 

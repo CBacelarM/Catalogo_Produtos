@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import api from "../services/api";
+import { useTheme } from "../contexts/ThemeContext";
 
 function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
+  const { isDarkMode } = useTheme();
   const [form, setForm] = useState({
     nome: "",
     descricao: "",
@@ -13,8 +15,12 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const styles = getStyles(isDarkMode);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
     if (produtoEdit) {
       setForm({
         nome: produtoEdit.nome || "",
@@ -69,6 +75,7 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
 
     if (!validate()) return;
 
+    setLoading(true);
     try {
       if (produtoEdit) {
         await api.put(`/produtos/${produtoEdit.id}`, {
@@ -91,6 +98,9 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
       onClose();
     } catch (err) {
       console.error(err);
+      alert("Erro ao salvar produto. Tente novamente.");
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -154,8 +164,8 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
               Cancelar
             </button>
 
-            <button type="submit" style={styles.saveButton}>
-              Salvar Produto
+            <button type="submit" style={styles.saveButton} disabled={loading}>
+              {loading ? "Salvando..." : "Salvar Produto"}
             </button>
           </div>
         </form>
@@ -164,21 +174,22 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
   );
 }
 
-const styles = {
+const getStyles = (isDarkMode) => ({
   overlay: {
     position: "fixed",
     top: 0,
     left: 0,
     width: "100%",
     height: "100%",
-    background: "rgba(0,0,0,0.5)",
+    background: isDarkMode ? "rgba(0,0,0,0.7)" : "rgba(0,0,0,0.5)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center"
   },
   modal: {
     position: "relative",
-    background: "#fff",
+    background: isDarkMode ? "#1F2937" : "#fff",
+    color: isDarkMode ? "#F9FAFB" : "#111827",
     padding: "20px",
     borderRadius: "12px",
     width: "90%",
@@ -192,14 +203,18 @@ const styles = {
   input: {
     padding: "10px",
     borderRadius: "8px",
-    border: "1px solid #E5E7EB",
+    border: `1px solid ${isDarkMode ? "#374151" : "#E5E7EB"}`,
+    background: isDarkMode ? "#374151" : "#fff",
+    color: isDarkMode ? "#F9FAFB" : "#111827",
     width: "100%",
     boxSizing: "border-box"
   },
   textarea: {
     padding: "10px",
     borderRadius: "8px",
-    border: "1px solid #E5E7EB",
+    border: `1px solid ${isDarkMode ? "#374151" : "#E5E7EB"}`,
+    background: isDarkMode ? "#374151" : "#fff",
+    color: isDarkMode ? "#F9FAFB" : "#111827",
     width: "100%",
     minHeight: "80px",
     boxSizing: "border-box"
@@ -207,9 +222,10 @@ const styles = {
   select: {
     padding: "10px",
     borderRadius: "8px",
-    border: "1px solid #E5E7EB",
+    border: `1px solid ${isDarkMode ? "#374151" : "#E5E7EB"}`,
+    background: isDarkMode ? "#374151" : "#fff",
+    color: isDarkMode ? "#F9FAFB" : "#111827",
     width: "100%",
-    background: "#fff",
     boxSizing: "border-box"
   },
   rowGroup: {
@@ -219,7 +235,9 @@ const styles = {
   inputHalf: {
     padding: "10px",
     borderRadius: "8px",
-    border: "1px solid #E5E7EB",
+    border: `1px solid ${isDarkMode ? "#374151" : "#E5E7EB"}`,
+    background: isDarkMode ? "#374151" : "#fff",
+    color: isDarkMode ? "#F9FAFB" : "#111827",
     width: "100%",
     boxSizing: "border-box"
   },
@@ -231,11 +249,12 @@ const styles = {
     background: "transparent",
     fontSize: "32px",
     cursor: "pointer",
-    color: "#6B7280"
+    color: isDarkMode ? "#9CA3AF" : "#6B7280"
   },
   title: {
     marginTop: 0,
-    marginBottom: "15px"
+    marginBottom: "15px",
+    color: isDarkMode ? "#F9FAFB" : "#111827"
   },
   error: {
     color: "#DC2626",
@@ -243,7 +262,7 @@ const styles = {
   },
   cancelButton: {
     flex: 1,
-    background: "#9CA3AF",
+    background: isDarkMode ? "#6B7280" : "#9CA3AF",
     color: "#fff",
     border: "none",
     borderRadius: "8px",
@@ -270,8 +289,9 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    fontSize: "14px"
+    fontSize: "14px",
+    color: isDarkMode ? "#F9FAFB" : "#111827"
   }
-};
+});
 
 export default ProductModal;

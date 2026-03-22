@@ -1,6 +1,9 @@
 import Home from "./pages/Home";
+import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
 
-function App() {
+function AppContent() {
+  const { isDarkMode } = useTheme();
+
   return (
     <>
       <style>{`
@@ -11,13 +14,22 @@ function App() {
         }
       `}</style>
       <div style={{
-        background: "#F9FAFB",
+        background: isDarkMode ? "#111827" : "#F9FAFB",
         minHeight: "100vh",
-        fontFamily: "Arial, sans-serif"
+        fontFamily: "Arial, sans-serif",
+        transition: "background 0.3s ease"
       }}>
         <Home />
       </div>
     </>
+  );
+}
+
+function App() {
+  return (
+    <ThemeProvider>
+      <AppContent />
+    </ThemeProvider>
   );
 }
 

@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import api from "../services/api";
 import ProductCard from "../components/ProductCard";
 import Header from "../components/Header";
 import ProductModal from "../components/ProductModal";
 import DeleteModal from "../components/DeleteModal";
+import Dashboard from "../components/Dashboard";
+import { useTheme } from "../contexts/ThemeContext";
 
 function Home() {
+  const { isDarkMode } = useTheme();
   const [produtos, setProdutos] = useState([]);
   const [busca, setBusca] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -16,26 +19,23 @@ function Home() {
   const [produtoEdit, setProdutoEdit] = useState(null);
   const [openDelete, setOpenDelete] = useState(false);
   const [produtoDelete, setProdutoDelete] = useState(null);
+  const [showDashboard, setShowDashboard] = useState(false);
 
-  function loadProdutos() {
+  const loadProdutos = useCallback(() => {
     setLoading(true);
-    let params = { nome: busca, categoria };
-    if (disponibilidade === "disponiveis") {
-      params.ativo = true;
-      params.estoqueMin = 1;
-    } else if (disponibilidade === "semEstoque") {
-      params.estoque = 0;
-    }
-    api.get("/produtos", { params })
+    api.get("/produtos", {
+      params: { nome: busca, categoria, disponibilidade }
+    })
       .then(res => {
         setProdutos(res.data);
         setLoading(false);
       })
       .catch(err => {
         console.error(err);
+        alert("Erro ao carregar produtos. Tente novamente.");
         setLoading(false);
       });
-  }
+  }, [busca, categoria, disponibilidade]);
 
   function ordenarProdutos(items) {
     if (!ordenacao) return items;
@@ -57,8 +57,9 @@ function Home() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
     loadProdutos();
-  }, [busca, categoria, disponibilidade]);
+  }, [loadProdutos]);
 
   function handleEdit(produto) {
     setProdutoEdit(produto);
@@ -68,6 +69,10 @@ function Home() {
   function handleNew() {
     setProdutoEdit(null);
     setOpenModal(true);
+  }
+
+  function handleShowDashboard() {
+    setShowDashboard(true);
   }
 
   function handleDelete(produto) {
@@ -83,27 +88,16 @@ function Home() {
       loadProdutos();
     } catch (err) {
       console.error(err);
+      alert("Erro ao excluir produto. Tente novamente.");
     }
   }
 
   const produtosOrdenados = ordenarProdutos(produtos);
 
-  const totalProdutos = produtos.length;
-  const valorTotalEstoque = produtos.reduce((sum, p) => sum + (p.preco * p.estoque), 0);
-  const produtosEstoqueBaixo = produtos.filter(p => p.estoque > 0 && p.estoque < 10).length;
-  const produtoMaisCaro = produtos.reduce((max, p) => p.preco > max.preco ? p : max, { preco: 0 });
-  const produtoMaisBarato = produtos.reduce((min, p) => p.preco < min.preco ? p : min, { preco: Infinity });
-
-  const cardStyle = {
-    background: "#FFFFFF",
-    border: "1px solid #E5E7EB",
-    borderRadius: "12px",
-    padding: "16px",
-    textAlign: "center"
-  };
+  const styles = getStyles(isDarkMode);
 
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
+    <div style={styles.container}>
       
       <Header 
         onSearch={setBusca}
@@ -111,100 +105,32 @@ function Home() {
         onDisponibilidadeChange={setDisponibilidade}
         onNewProduct={handleNew}
         onOrderChange={setOrdenacao}
+        onShowDashboard={handleShowDashboard}
       />
 
       {/* LOADING */}
       {loading && (
-        <div style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "400px",
-          flexDirection: "column",
-          gap: "20px"
-        }}>
-          <div style={{
-            border: "4px solid #E5E7EB",
-            borderTop: "4px solid #3B82F6",
-            borderRadius: "50%",
-            width: "40px",
-            height: "40px",
-            animation: "spin 1s linear infinite"
-          }} />
-          <p style={{ color: "#6B7280", fontSize: "16px" }}>Carregando produtos...</p>
+        <div style={styles.loadingContainer}>
+          <div style={styles.spinner} />
+          <p style={styles.loadingText}>Carregando produtos...</p>
         </div>
       )}
 
       {/* EMPTY STATE */}
       {!loading && produtosOrdenados.length === 0 && (
-        <div style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "400px",
-          flexDirection: "column",
-          gap: "20px",
-          textAlign: "center"
-        }}>
-          <div style={{ fontSize: "60px" }}>📭</div>
-          <h2 style={{ color: "#6B7280", margin: 0 }}>Nenhum produto encontrado</h2>
-          <p style={{ color: "#9CA3AF", margin: 0 }}>Tente ajustar seus filtros ou criar um novo produto</p>
-          <button onClick={handleNew} style={{
-            background: "#3B82F6",
-            color: "#fff",
-            border: "none",
-            padding: "10px 20px",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontWeight: "bold",
-            marginTop: "10px"
-          }}>
+        <div style={styles.emptyState}>
+          <div style={styles.emptyIcon}>📭</div>
+          <h2 style={styles.emptyTitle}>Nenhum produto encontrado</h2>
+          <p style={styles.emptyText}>Tente ajustar seus filtros ou criar um novo produto</p>
+          <button onClick={handleNew} style={styles.emptyButton}>
             + Novo Produto
           </button>
         </div>
       )}
 
-      {/* DASHBOARD */}
-      {!loading && (
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "20px",
-          marginBottom: "20px"
-        }}>
-          <div style={cardStyle}>
-            <h3>Total de Produtos</h3>
-            <p style={{ fontSize: "24px", fontWeight: "bold" }}>{totalProdutos}</p>
-          </div>
-          <div style={cardStyle}>
-            <h3>Valor Total do Estoque</h3>
-            <p style={{ fontSize: "24px", fontWeight: "bold" }}>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valorTotalEstoque)}</p>
-          </div>
-          <div style={cardStyle}>
-            <h3>Produtos com Estoque Baixo</h3>
-            <p style={{ fontSize: "24px", fontWeight: "bold" }}>{produtosEstoqueBaixo}</p>
-          </div>
-          <div style={cardStyle}>
-            <h3>Produto Mais Caro</h3>
-            <p style={{ fontSize: "16px" }}>{produtoMaisCaro.nome || "N/A"}</p>
-            <p style={{ fontSize: "20px", fontWeight: "bold" }}>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(produtoMaisCaro.preco || 0)}</p>
-          </div>
-          <div style={cardStyle}>
-            <h3>Produto Mais Barato</h3>
-            <p style={{ fontSize: "16px" }}>{produtoMaisBarato.nome || "N/A"}</p>
-            <p style={{ fontSize: "20px", fontWeight: "bold" }}>{new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(produtoMaisBarato.preco === Infinity ? 0 : produtoMaisBarato.preco)}</p>
-          </div>
-        </div>
-      )}
-
       {/* GRID */}
       {!loading && produtosOrdenados.length > 0 && (
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-        gap: "20px",
-        marginTop: "20px"
-      }}>
+      <div style={styles.grid}>
         {produtosOrdenados.map(p => (
           <ProductCard
             key={p.id}
@@ -232,8 +158,78 @@ function Home() {
         onConfirm={confirmDelete}
         produto={produtoDelete}
       />
+
+      {showDashboard && (
+        <Dashboard
+          produtos={produtos}
+          onClose={() => setShowDashboard(false)}
+        />
+      )}
     </div>
   );
 }
-
+const getStyles = (isDarkMode) => ({
+  container: {
+    maxWidth: "1200px",
+    margin: "0 auto",
+    padding: "20px",
+    color: isDarkMode ? "#F9FAFB" : "#111827"
+  },
+  loadingContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "400px",
+    flexDirection: "column",
+    gap: "20px"
+  },
+  spinner: {
+    border: `4px solid ${isDarkMode ? "#374151" : "#E5E7EB"}`,
+    borderTop: "4px solid #3B82F6",
+    borderRadius: "50%",
+    width: "40px",
+    height: "40px",
+    animation: "spin 1s linear infinite"
+  },
+  loadingText: {
+    color: isDarkMode ? "#9CA3AF" : "#6B7280",
+    fontSize: "16px"
+  },
+  emptyState: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "400px",
+    flexDirection: "column",
+    gap: "20px",
+    textAlign: "center"
+  },
+  emptyIcon: {
+    fontSize: "60px"
+  },
+  emptyTitle: {
+    color: isDarkMode ? "#9CA3AF" : "#6B7280",
+    margin: 0
+  },
+  emptyText: {
+    color: isDarkMode ? "#6B7280" : "#9CA3AF",
+    margin: 0
+  },
+  emptyButton: {
+    background: "#3B82F6",
+    color: "#fff",
+    border: "none",
+    padding: "10px 20px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontWeight: "bold",
+    marginTop: "10px"
+  },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
+    gap: "20px",
+    marginTop: "20px"
+  }
+});
 export default Home;
