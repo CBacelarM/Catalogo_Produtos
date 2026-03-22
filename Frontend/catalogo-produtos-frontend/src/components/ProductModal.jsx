@@ -16,6 +16,7 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
 
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
   const styles = getStyles(isDarkMode);
 
@@ -31,6 +32,7 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
         imagemUrl: produtoEdit.imagemUrl || "",
         ativo: produtoEdit.ativo !== undefined ? produtoEdit.ativo : true
       });
+      setImageError(false);
     } else {
       setForm({
         nome: "",
@@ -41,6 +43,7 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
         imagemUrl: "",
         ativo: true
       });
+      setImageError(false);
     }
   }, [produtoEdit]);
 
@@ -49,6 +52,9 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
   function handleChange(e) {
     const { name, value } = e.target;
     setForm({ ...form, [name]: value });
+    if (name === "imagemUrl") {
+      setImageError(false);
+    }
   }
 
   function validate() {
@@ -143,11 +149,21 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
           <input name="imagemUrl" placeholder="URL da imagem" value={form.imagemUrl} onChange={handleChange} style={styles.input} />
 
           {form.imagemUrl && (
-            <img
-              src={form.imagemUrl}
-              alt="preview"
-              style={{ width: "100px", marginTop: "10px" }}
-            />
+            <div style={styles.imagePreviewContainer}>
+              {!imageError ? (
+                <img
+                  src={form.imagemUrl}
+                  alt="preview"
+                  onError={() => setImageError(true)}
+                  style={styles.imagePreview}
+                />
+              ) : (
+                <div style={styles.imageErrorPlaceholder}>
+                  <span style={styles.imageErrorText}>❌ Erro ao carregar imagem</span>
+                  <small style={styles.imageErrorSubtext}>Verifique a URL</small>
+                </div>
+              )}
+            </div>
           )}
 
           <label style={styles.checkboxLabel}>
@@ -291,6 +307,39 @@ const getStyles = (isDarkMode) => ({
     gap: "8px",
     fontSize: "14px",
     color: isDarkMode ? "#F9FAFB" : "#111827"
+  },
+  imagePreviewContainer: {
+    width: "100%",
+    height: "200px",
+    borderRadius: "8px",
+    border: `2px dashed ${isDarkMode ? "#4B5563" : "#D1D5DB"}`,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: "10px",
+    background: isDarkMode ? "#111827" : "#F3F4F6",
+    overflow: "hidden"
+  },
+  imagePreview: {
+    maxWidth: "100%",
+    maxHeight: "100%",
+    objectFit: "contain",
+    borderRadius: "6px"
+  },
+  imageErrorPlaceholder: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "8px",
+    color: "#EF4444"
+  },
+  imageErrorText: {
+    fontSize: "16px",
+    fontWeight: "600"
+  },
+  imageErrorSubtext: {
+    fontSize: "12px",
+    color: "#9CA3AF"
   }
 });
 
