@@ -58,11 +58,15 @@ Catalogo_Produtos/
 ├── Backend/                          # API .NET
 │   ├── Controllers/
 │   │   └── ProdutosController.cs    # Endpoints da API
-│   ├── Models/
-│   │   └── Produto.cs               # Entidade principal
-│   ├── Data/
-│   │   ├── ApplicationDbContext.cs   # DbContext
-│   │   └── migrations/              # Histórico do banco
+│   ├── Domain/
+│   │   └── Entities/         
+│   │      └── Produto.cs            # Entidade principal
+│   ├── Infrastructure/
+│   │   ├── Data/
+│   │      └── AppDbContext.cs       # DbContext
+│   │   └── Migrations/              # Histórico do banco
+│   │      └── InitialCreate.cs
+│   │      └── AppDbContextModelSnapshot
 │   ├── appsettings.json             # Configuração
 │   └── Program.cs                   # Setup da aplicação
 │
