@@ -38,7 +38,6 @@ function Header({ onSearch, onCategoriaChange, onDisponibilidadeChange, onNewPro
             <option value="Alimentos">Alimentos</option>
             <option value="Casa">Casa</option>
             <option value="Esportes">Esportes</option>
-            <option value="Outros">Outros</option>
           </select>
 
           <select style={styles.select} onChange={(e) => onDisponibilidadeChange(e.target.value)}>

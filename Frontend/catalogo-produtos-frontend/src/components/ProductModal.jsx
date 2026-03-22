@@ -158,7 +158,6 @@ function ProductModal({ isOpen, onClose, onCreated, produtoEdit }) {
             <option value="Alimentos">Alimentos</option>
             <option value="Casa">Casa</option>
             <option value="Esportes">Esportes</option>
-            <option value="Outros">Outros</option>
           </select>
           {errors.categoria && <span style={styles.error}>{errors.categoria}</span>}
 
