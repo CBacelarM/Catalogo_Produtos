@@ -128,25 +128,25 @@ cd Backend
 # 2. Restaurar dependências
 dotnet restore
 
-# 3. Atualizar banco de dados (se houver migrations)
+# 3. Atualizar banco de dados 
 dotnet ef database update
 
 # 4. Executar a aplicação
 dotnet run
-# API estará em: http://localhost:5198
+# API estará em: http://localhost:5198 ( meu )
 
 Testes Automatizados
 
 O projeto possui testes automatizados utilizando xUnit no backend (.NET), com foco em validação dos endpoints da API.
 
-✔️ Tecnologias
+ Tecnologias
 xUnit → Framework de testes
 Microsoft.AspNetCore.Mvc.Testing → Testes de integração da API
 HttpClient → Simulação de requisições HTTP
-✔️ O que está sendo testado
+ O que está sendo testado
 Endpoint GET /produtos
 Validação de resposta HTTP (Status Code 200 - OK)
-✔️ Exemplo de teste implementado
+ Exemplo de teste implementado
 [Fact]
 public async Task GetProdutos_DeveRetornarOk()
 {
