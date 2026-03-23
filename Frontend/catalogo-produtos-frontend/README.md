@@ -69,7 +69,9 @@ Catalogo_Produtos/
 │   │      └── AppDbContextModelSnapshot
 │   ├── appsettings.json             # Configuração
 │   └── Program.cs                   # Setup da aplicação
-│
+├── Backend/                         # TESTE UNITÁRIO
+│   ├── Controllers/
+│   │   └── ProdutosControllerTests.cs
 └── Frontend/
     └── catalogo-produtos-frontend/
         ├── src/
@@ -132,6 +134,30 @@ dotnet ef database update
 # 4. Executar a aplicação
 dotnet run
 # API estará em: http://localhost:5198
+
+Testes Automatizados
+
+O projeto possui testes automatizados utilizando xUnit no backend (.NET), com foco em validação dos endpoints da API.
+
+✔️ Tecnologias
+xUnit → Framework de testes
+Microsoft.AspNetCore.Mvc.Testing → Testes de integração da API
+HttpClient → Simulação de requisições HTTP
+✔️ O que está sendo testado
+Endpoint GET /produtos
+Validação de resposta HTTP (Status Code 200 - OK)
+✔️ Exemplo de teste implementado
+[Fact]
+public async Task GetProdutos_DeveRetornarOk()
+{
+    var response = await _client.GetAsync("/produtos");
+
+
+    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+}
+▶️ Como executar os testes
+
+dotnet test
 ```
 
 **Verificar se está rodando:**
@@ -402,7 +428,6 @@ useEffect(() => {
 - [ ] Search de produtos do lado do servidor (melhor performance)
 - [ ] Paginação na listagem (ex: 10 itens por página)
 - [ ] Validação de email no backend se houver usuários
-- [ ] Testes unitários (xUnit no .NET, Vitest no React)
 
 ### Médio Prazo
 - [ ] **Autenticação** (JWT com roles: admin/vendedor/cliente)
@@ -444,7 +469,7 @@ Frontend:
 | **Lógica de negócio** | Controllers | Services Layer | Testabilidade |
 | **Estado** | Context + useState | Redux Toolkit | Escalabilidade |
 | **Filtros** | Frontend (simples) | Backend + Redis | Performance em escala |
-| **Testes** | Nenhum | 80%+ coverage | Confiabilidade |
+| **Testes** | Básicos (xUnit) | 80%+ coverage | Confiabilidade |
 | **Validação** | Básica | FluentValidation | Rules engine |
 | **Autenticação** | Nenhuma | JWT + Roles | Segurança |
 | **Deploy** | Local | Docker + CI/CD | Produção |

@@ -3,7 +3,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.Testing;
 
-namespace CatalogoProdutos.Tests;
+namespace CatalogoProdutos.Tests.Controllers;
 
 public class ProdutosControllerTests : IClassFixture<WebApplicationFactory<Program>>
 {
