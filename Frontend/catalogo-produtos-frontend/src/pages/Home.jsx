@@ -4,6 +4,7 @@ import ProductCard from "../components/ProductCard";
 import Header from "../components/Header";
 import ProductModal from "../components/ProductModal";
 import DeleteModal from "../components/DeleteModal";
+import Dashboard from "../components/Dashboard";
 
 function Home() {
   const [produtos, setProdutos] = useState([]);
@@ -17,6 +18,8 @@ function Home() {
   const [produtoDelete, setProdutoDelete] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8);
+
+  const [showDashboard, setShowDashboard] = useState(false);
 
   function loadProdutos() {
     setLoading(true);
@@ -75,6 +78,10 @@ function Home() {
     setOpenDelete(true);
   }
 
+  function handleShowDashboard() {
+    setShowDashboard(true);
+  }
+
   async function confirmDelete(id) {
     try {
       await api.delete(`/produtos/${id}`);
@@ -101,6 +108,7 @@ function Home() {
         onCategoriaChange={setCategoria}
         onNewProduct={handleNew}
         onOrderChange={setOrdenacao}
+        onShowDashboard={handleShowDashboard}
       />
 
       {/* LOADING */}
@@ -230,6 +238,14 @@ function Home() {
         onConfirm={confirmDelete}
         produto={produtoDelete}
       />
+
+      {/* DASHBOARD */}
+      {showDashboard && (
+        <Dashboard
+          produtos={produtos}
+          onClose={() => setShowDashboard(false)}
+        />
+      )}
     </div>
   );
 }
