@@ -1,9 +1,16 @@
 import { useState } from "react";
-import { useTheme } from "../contexts/ThemeContext";
+import { useTheme } from "../hooks/useTheme";
+import { getThemeColors } from "../constants/theme";
+import { formatCurrency } from "../utils/format";
+
+const FALLBACK_IMAGE = "https://picsum.photos/300/200";
 
 function ProductCard({ produto, onEdit, onDelete }) {
   const { isDarkMode } = useTheme();
+  const c = getThemeColors(isDarkMode);
   const [hovered, setHovered] = useState(null);
+  const [imageError, setImageError] = useState(false);
+
   const estoque = produto.estoque;
   const isSemEstoque = estoque === 0;
 
@@ -13,31 +20,25 @@ function ProductCard({ produto, onEdit, onDelete }) {
       ? { text: `⚠ Apenas ${estoque} unidades`, bg: "#FEF3C7", color: "#92400E" }
       : { text: `✅ ${estoque} unidades`, bg: "#D1FAE5", color: "#065F46" };
 
-  const cardStyle = {
-    background: isDarkMode ? "#1F2937" : "#FFFFFF",
-    border: `1px solid ${isDarkMode ? "#374151" : "#E5E7EB"}`,
-    borderRadius: "12px",
-    padding: "16px",
-    transition: "0.2s",
-    cursor: "pointer",
-    opacity: isSemEstoque ? 0.45 : produto.ativo ? 1 : 0.6,
-    filter: isSemEstoque ? "grayscale(80%)" : "none"
-  };
+  const imageSrc = imageError || !produto.imagemUrl ? FALLBACK_IMAGE : produto.imagemUrl;
 
   return (
     <div
-      style={cardStyle}
-      onMouseEnter={e => {
-        if (!isSemEstoque) e.currentTarget.style.transform = "translateY(-5px)";
-      }}
-      onMouseLeave={e => {
-        if (!isSemEstoque) e.currentTarget.style.transform = "translateY(0)";
+      className={`product-card${isSemEstoque ? " product-card--disabled" : ""}`}
+      style={{
+        background: c.bgCard,
+        border: `1px solid ${c.border}`,
+        borderRadius: "12px",
+        padding: "16px",
+        cursor: "pointer",
+        opacity: isSemEstoque ? 0.45 : produto.ativo ? 1 : 0.6,
+        filter: isSemEstoque ? "grayscale(80%)" : "none"
       }}
     >
-
       <img
-        src={produto.imagemUrl || "https://picsum.photos/300/200"}
+        src={imageSrc}
         alt={produto.nome}
+        onError={() => setImageError(true)}
         style={{
           width: "100%",
           height: "150px",
@@ -47,65 +48,73 @@ function ProductCard({ produto, onEdit, onDelete }) {
         }}
       />
 
-      <h3 style={{ fontSize: "16px", fontWeight: "600", color: isDarkMode ? "#F9FAFB" : "#111827" }}>
+      <h3 style={{ fontSize: "16px", fontWeight: "600", color: c.textPrimary }}>
         {produto.nome}
       </h3>
 
-      <p style={{ fontSize: "20px", fontWeight: "700", color: isDarkMode ? "#F9FAFB" : "#111827" }}>
-        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(produto.preco)}
+      <p style={{ fontSize: "20px", fontWeight: "700", color: c.textPrimary }}>
+        {formatCurrency(produto.preco)}
       </p>
 
       {produto.descricao && (
-        <p style={{ fontSize: "14px", color: isDarkMode ? "#9CA3AF" : "#6B7280", margin: "5px 0" }}>
-          {produto.descricao.length > 100 ? produto.descricao.substring(0, 100) + "..." : produto.descricao}
+        <p style={{ fontSize: "14px", color: c.textSecondary, margin: "5px 0" }}>
+          {produto.descricao.length > 100
+            ? `${produto.descricao.substring(0, 100)}...`
+            : produto.descricao}
         </p>
       )}
 
-      <span style={{
-        display: "inline-block",
-        padding: "5px 10px",
-        borderRadius: "8px",
-        background: status.bg,
-        color: status.color,
-        fontSize: "12px",
-        fontWeight: "600"
-      }}>
+      <span
+        style={{
+          display: "inline-block",
+          padding: "5px 10px",
+          borderRadius: "8px",
+          background: status.bg,
+          color: status.color,
+          fontSize: "12px",
+          fontWeight: "600"
+        }}
+      >
         {status.text}
       </span>
 
-      <p style={{ color: isDarkMode ? "#9CA3AF" : "#6B7280", marginTop: "8px" }}>
-        {produto.categoria}
-      </p>
+      <p style={{ color: c.textSecondary, marginTop: "8px" }}>{produto.categoria}</p>
 
       {!produto.ativo && (
-        <p style={{ color: "#EF4444", fontWeight: "bold" }}>
-          Indisponível
-        </p>
+        <p style={{ color: c.danger, fontWeight: "bold" }}>Indisponível</p>
       )}
 
-      <div style={{
-        marginTop: "10px",
-        display: "flex",
-        gap: "10px"
-      }}>
+      <div style={{ marginTop: "10px", display: "flex", gap: "10px" }}>
         <button
+          type="button"
           style={{
-            ...btnEdit,
-            ...(hovered === "edit" ? btnEditHover : {}),
-            ...(!produto.ativo ? btnInactive : {})
+            flex: 1,
+            background: hovered === "edit" ? c.primaryHover : c.primary,
+            color: "#fff",
+            border: "none",
+            padding: "8px",
+            borderRadius: "8px",
+            cursor: produto.ativo ? "pointer" : "not-allowed",
+            opacity: produto.ativo ? 1 : 0.5
           }}
-          onClick={() => onEdit(produto)}
+          onClick={() => produto.ativo && onEdit(produto)}
           onMouseEnter={() => setHovered("edit")}
           onMouseLeave={() => setHovered(null)}
+          disabled={!produto.ativo}
         >
           Editar
         </button>
 
         <button
+          type="button"
           style={{
-            ...btnDelete,
-            ...(hovered === "delete" ? btnDeleteHover : {}),
-            ...(!produto.ativo ? btnInactive : {})
+            flex: 1,
+            background: hovered === "delete" ? c.dangerHover : c.danger,
+            color: "#fff",
+            border: "none",
+            padding: "8px",
+            borderRadius: "8px",
+            cursor: "pointer"
           }}
           onClick={() => onDelete(produto)}
           onMouseEnter={() => setHovered("delete")}
@@ -117,38 +126,5 @@ function ProductCard({ produto, onEdit, onDelete }) {
     </div>
   );
 }
-
-const btnEdit = {
-  flex: 1,
-  background: "#3B82F6",
-  color: "#fff",
-  border: "none",
-  padding: "8px",
-  borderRadius: "8px",
-  cursor: "pointer"
-};
-
-const btnDelete = {
-  flex: 1,
-  background: "#EF4444",
-  color: "#fff",
-  border: "none",
-  padding: "8px",
-  borderRadius: "8px",
-  cursor: "pointer"
-};
-
-const btnEditHover = {
-  background: "#2563EB"
-};
-
-const btnDeleteHover = {
-  background: "#DC2626"
-};
-
-const btnInactive = {
-  opacity: 0.5,
-  cursor: "not-allowed"
-};
 
 export default ProductCard;

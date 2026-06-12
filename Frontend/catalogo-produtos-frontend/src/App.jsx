@@ -1,34 +1,31 @@
 import Home from "./pages/Home";
-import { ThemeProvider, useTheme } from "./contexts/ThemeContext";
+import { ThemeProvider } from "./contexts/ThemeProvider";
+import { ToastProvider } from "./contexts/ToastProvider";
+import { useTheme } from "./hooks/useTheme";
 
 function AppContent() {
   const { isDarkMode } = useTheme();
 
   return (
-    <>
-      <style>{`
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
-      <div style={{
+    <div
+      style={{
         background: isDarkMode ? "#111827" : "#F9FAFB",
         minHeight: "100vh",
         fontFamily: "Arial, sans-serif",
         transition: "background 0.3s ease"
-      }}>
-        <Home />
-      </div>
-    </>
+      }}
+    >
+      <Home />
+    </div>
   );
 }
 
 function App() {
   return (
     <ThemeProvider>
-      <AppContent />
+      <ToastProvider>
+        <AppContent />
+      </ToastProvider>
     </ThemeProvider>
   );
 }
